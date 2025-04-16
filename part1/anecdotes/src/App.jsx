@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Button from './button'
+import Button from '../../unicafe/src/Button';
 
 const App = () => {
   const anecdotes = [
@@ -14,16 +14,25 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState(new Array(anecdotes.length).fill(0));
 
   const handleNextClick = () => {
     const index = Math.floor(Math.random() * anecdotes.length);
     setSelected(index);
-  } 
+  }
+  
+  const handleVoteClick = () => {
+    const newVotes = [...votes];
+    newVotes[selected] += 1;
+    setVotes(newVotes);
+  }
 
   return (
     <div>
       <p>{anecdotes[selected]}</p>
+      <p>has {votes[selected]} votes. </p>
       <Button onClick={handleNextClick} text='Next Anecdote' />
+      <Button onClick={handleVoteClick} text='Vote' />
     </div>
   )
 }
