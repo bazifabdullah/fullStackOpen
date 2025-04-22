@@ -5,8 +5,16 @@ const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
 
-  const addNumber = (event) => {
+  const addPerson = (event) => {
     event.preventDefault()
+
+    const personExists = persons.some(person => person.name === newName)
+
+    if (personExists) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
+  
     const newPerson = {
       name: newName,
       id: String(persons.length + 1),
@@ -22,7 +30,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addNumber}>
+      <form onSubmit={addPerson}>
         <div>
           name: <input
             value={newName}
