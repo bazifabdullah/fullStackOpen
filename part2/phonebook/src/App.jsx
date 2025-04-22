@@ -4,6 +4,7 @@ import Contact from './components/Contact'
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -17,14 +18,20 @@ const App = () => {
   
     const newPerson = {
       name: newName,
+      number: newNumber,
       id: String(persons.length + 1),
     }
     setPersons([...persons, newPerson])
+    setNewNumber('')
     setNewName('')
   }
 
-  const handleInput = (event) => {
+  const handleNameInput = (event) => {
     setNewName(event.target.value)
+  }
+
+  const handleNumberInput = (event) => {
+    setNewNumber(event.target.value)
   }
 
   return (
@@ -32,9 +39,15 @@ const App = () => {
       <h2>Phonebook</h2>
       <form onSubmit={addPerson}>
         <div>
-          name: <input
+          Name: <input
             value={newName}
-            onChange={handleInput}
+            onChange={handleNameInput}
+          />
+        </div>
+        <div>
+          Number: <input
+            value={newNumber}
+            onChange={handleNumberInput}
           />
         </div>
         <div>
@@ -44,7 +57,7 @@ const App = () => {
       <h2>Numbers</h2>
       <div>
         {persons.map((person, key) => 
-          <Contact key={person.id} name={person.name} />
+          <Contact key={person.id} name={person.name} number={person.number}/>
         )}
       </div>
     </div>
