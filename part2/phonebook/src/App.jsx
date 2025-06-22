@@ -3,6 +3,7 @@ import axios from 'axios'
 import SearchFilter from './components/SearchFilter'
 import PersonForm from './components/PersonForm'
 import ContactList from './components/ContactList'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,10 +12,10 @@ const App = () => {
   const [filteredContact, setFilteredContact] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
@@ -31,11 +32,15 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: newNumber,
-      id: String(persons.length + 1),
     }
-    setPersons([...persons, newPerson])
-    setNewNumber('')
-    setNewName('')
+
+    personService
+      .create(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleNameInput = (event) => {
