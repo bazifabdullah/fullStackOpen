@@ -3,12 +3,15 @@ import SearchFilter from './components/SearchFilter'
 import PersonForm from './components/PersonForm'
 import ContactList from './components/ContactList'
 import personService from './services/persons'
+import Notification from './components/AlertMessage'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filteredContact, setFilteredContact] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationType, setNotificationType] = useState(null)
 
   useEffect(() => {
     personService
@@ -43,6 +46,12 @@ const App = () => {
             ))
             setNewName('')
             setNewNumber('')
+            setNotificationMessage(`Successfully updated ${newName}'s number`)
+            setNotificationType('success')
+            setTimeout(() => {
+              setNotificationMessage(null)
+              setNotificationType(null)
+            }, 3000);
           })
           .catch(error => {
             alert(`Error updating ${newName}'s number. Please try again.`)
@@ -64,6 +73,13 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
+
+        setNotificationMessage(`Added ${returnedPerson.name}`)
+        setNotificationType('success')
+        setTimeout(() => {
+          setNotificationMessage(null)
+          setNotificationType(null)
+        }, 3000);
       })
   }
 
@@ -84,20 +100,39 @@ const App = () => {
   )
 
   const deleteEntry = (id) => {
+    const personToDelete = persons.find(person => person.id === id)
     const confirmDelete = window.confirm('Are you sure you want to delete this contact?')
 
     if (confirmDelete) {
       personService
-      .remove(id)
-      .then(() => {
-        setPersons(persons.filter(person => person.id !== id))
-      })
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+          setNotificationMessage(`Deleted ${personToDelete ? personToDelete.name : 'contact'} successfully`)
+          setNotificationType('success')
+          setTimeout(() => {
+            setNotificationMessage(null)
+            setNotificationType(null)
+          }, 3000)
+        })
+        .catch(error => {
+          setNotificationMessage(
+            `Information of ${personToDelete ? personToDelete.name : 'this contact'} has already been removed from server`
+          )
+          setNotificationType('error')
+          setPersons(persons.filter(person => person.id !== id))
+          setTimeout(() => {
+            setNotificationMessage(null)
+            setNotificationType(null)
+          }, 3000)
+        })
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} type={notificationType} />
       <SearchFilter value={filteredContact} onChange={handleSearchFilter} />
 
       <h2>Add a person</h2>
